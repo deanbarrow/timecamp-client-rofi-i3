@@ -1,0 +1,12 @@
+#!/bin/bash
+
+timecamp i3block
+
+case "$BLOCK_BUTTON" in 1|2)
+    timecamp menu
+    ;;
+
+    3)
+    firefox "https://app.timecamp.com/app#/reports/projects_and_tasks/billable"
+    ;;
+esac

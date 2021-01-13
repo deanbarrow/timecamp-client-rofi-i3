@@ -1,0 +1,16 @@
+{
+  "name": "timecamp-i3-rofi",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {},
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "got": "^11.8.1"
+  },
+ "bin": {
+    "timecamp": "./index.js"
+  }
+}
