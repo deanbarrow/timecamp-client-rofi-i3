@@ -8,6 +8,7 @@ const {
     exec,
     spawn
 } = require('child_process')
+const orderBy = require('lodash.orderby')
 
 const timeoutTasks = process.env.TIMEOUT_TASKS || 10
 const timeoutEntries = process.env.TIMEOUT_ENTRIES || 5
@@ -54,21 +55,35 @@ const readTasks = async () => {
 
     const activeTask = await getActiveTask()
 
+    let entries = fs.readFileSync(`${dataPath}/entries.json`)
+    entries = await JSON.parse(entries)
 
     const prepend = activeTask ? [`Stop Task: ${activeTask.name}`, `${'-'.repeat(activeTask.name.length + 11)}`] : []
-    const output = []
+    let output = []
     for (let parentTask of tasks[0]) {
         const {
             task_id,
             name
         } = parentTask
         for (let task of tasks[task_id]) {
-            output.push(`${name}: ${task.name}`)
+          task.last = '0'
+          entries.forEach(e =>{
+            if(task.task_id === e.task_id)
+              if (e.last_modify > task.last) task.last = e.last_modify
+          })
+            output.push({
+              name: `${name}: ${task.name}`,
+              last: task.last
+            })
         }
     }
+
+    output = orderBy(output, ['last', 'name'], ['desc', 'asc'])
+    output = output.map(o => o.name)
+
     return {
         tasks,
-        list: [...prepend, ...output.sort()]
+        list: [...prepend, ...output]
     }
 }
 
@@ -89,7 +104,8 @@ const displayMenu = async () => {
         list
     } = await readTasks()
 
-    const child = spawn('rofi', ['-dmenu', '-i', '-p', 'Select Task', '-location', '1', '-width', '100', '-lines', '15', '-line-margin', '0', '-line-padding', '1', '-separator-style', 'none', '-font', 'mono 10', '-columns', '8', '-bw', '0', '-disable-history', '-hidde-scrollbar'])
+
+    const child = spawn('rofi', ['-dmenu', '-i', '-p', 'Task'])
     child.stdin.write(list.join('\n'))
     child.stdin.end();
 
@@ -235,6 +251,7 @@ const getEntries = async () => {
         }
     }
 
+    fs.writeFileSync(`${dataPath}/entries.json`, JSON.stringify(entries, null, 2))
     fs.writeFileSync(`${dataPath}/status.json`, JSON.stringify(output, null, 2))
 }
 
@@ -264,11 +281,11 @@ const geti3Block = async () => {
 
 
 const auto = async () => {
-    await getTasks();
-    setInterval(getTasks, timeoutTasks * 1000 * 60);
-
     await getEntries();
     setInterval(getEntries, timeoutEntries * 1000 * 60);
+
+    await getTasks();
+    setInterval(getTasks, timeoutTasks * 1000 * 60);
 }
 
 ;

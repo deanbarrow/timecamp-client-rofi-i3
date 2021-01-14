@@ -8,9 +8,10 @@
   "license": "ISC",
   "dependencies": {
     "dotenv": "^8.2.0",
-    "got": "^11.8.1"
+    "got": "^11.8.1",
+    "lodash.orderby": "^4.6.0"
   },
- "bin": {
+  "bin": {
     "timecamp": "./index.js"
   }
 }
