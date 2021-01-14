@@ -9,6 +9,7 @@ const {
     spawn
 } = require('child_process')
 const orderBy = require('lodash.orderby')
+const relativeDate = require('relative-date')
 
 const timeoutTasks = process.env.TIMEOUT_TASKS || 10
 const timeoutEntries = process.env.TIMEOUT_ENTRIES || 5
@@ -104,8 +105,15 @@ const displayMenu = async () => {
         list
     } = await readTasks()
 
+    const activeTask = await getActiveTask()
 
-    const child = spawn('rofi', ['-dmenu', '-i', '-p', 'Task'])
+    let status = fs.readFileSync(`${dataPath}/status.json`)
+    status = await JSON.parse(status)
+
+    let mesg = `Today: ${status.today.hours}:${status.today.minutes}, this week: ${status.week.hours}:${status.week.minutes}.`
+    if(activeTask) mesg += `\nYou started working on ${activeTask.name} ${relativeDate(new Date(activeTask.started_at.replace(/-/g,"/")))}.`
+
+    const child = spawn('rofi', ['-dmenu', '-i', '-p', 'Task', '-mesg', mesg])
     child.stdin.write(list.join('\n'))
     child.stdin.end();
 
@@ -167,7 +175,8 @@ const startTask = async (task) => {
 
     activeTask = {
         ...activeTask,
-        name
+        name,
+        started_at: formatedTimestamp()
     }
     fs.writeFileSync(`${dataPath}/active.json`, JSON.stringify(activeTask, null, 2))
 
@@ -205,6 +214,14 @@ const stopCurrentTask = async () => {
 }
 
 const timeNow = () => new Date().toLocaleString().replace(/\//g, '-').replace(',', '')
+
+// https://gist.github.com/MythRen/c4921735812dd2c0217a#gistcomment-3325758
+const formatedTimestamp = ()=> {
+    const d = new Date()
+    const date = d.toISOString().split('T')[0];
+    const time = d.toTimeString().split(' ')[0];
+    return `${date} ${time}`
+}
 
 const getEntries = async () => {
 
