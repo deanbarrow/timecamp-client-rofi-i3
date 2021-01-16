@@ -92,8 +92,10 @@ const getActiveTask = async () => {
     try {
         let active = fs.readFileSync(`${dataPath}/active.json`)
         active = await JSON.parse(active)
+        active.duration = active ? parseInt((new Date() - new Date(active.started_at.replace(/-/g,"/"))) / 1000) : 0
         return active ? active : false
     } catch (err) {
+        // console.log({err})
         return false
     }
 }
@@ -245,7 +247,8 @@ const getEntries = async () => {
         return false
     }
 
-    let today = 0,
+    const activeTask = await getActiveTask()
+    let today = activeTask.duration || 0,
         week = 0
     for (let entry of entries) {
         const {
