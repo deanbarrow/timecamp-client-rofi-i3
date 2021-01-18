@@ -249,7 +249,7 @@ const getEntries = async () => {
 
     const activeTask = await getActiveTask()
     let today = activeTask.duration || 0,
-        week = 0
+        week = today
     for (let entry of entries) {
         const {
             date,
