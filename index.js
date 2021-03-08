@@ -229,14 +229,12 @@ const getEntries = async () => {
 
     // Start from Monday as current work week
     // https://stackoverflow.com/questions/5210376/how-to-get-first-and-last-day-of-the-week-in-javascript/44392420
-    const curr = new Date;
-    const first = curr.getDate() - (curr.getDay() === 0 ? 7 : curr.getDay()) + 1;
-    const last = first + 6;
-    // console.log({curr, first, last}, curr.getDate(), curr.getDay())
+    const curr = new Date
+    const first = curr.getDate() - (curr.getDay() === 0 ? 7 : curr.getDay()) + 1
+    const last = first + 6
     const rangeStart = new Date(curr.setDate(first)).toISOString().substring(0, 10)
     const rangeEnd = new Date(curr.setDate(last)).toISOString().substring(0, 10)
     const now = new Date
-    // console.log({curr, rangeStart, rangeEnd})
 
     let entries
     try {
