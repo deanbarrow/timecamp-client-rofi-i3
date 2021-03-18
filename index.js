@@ -69,7 +69,7 @@ const readTasks = async () => {
         for (let task of tasks[task_id]) {
           task.last = '0'
           entries.forEach(e =>{
-            if(task.task_id === e.task_id)
+            if(task.task_id.toString() === e.task_id)
               if (e.last_modify > task.last) task.last = e.last_modify
           })
             output.push({
