@@ -39,7 +39,7 @@ const getTasks = async () => {
             parent_id
         } = tasks[task]
 
-        if (archived !== '0') continue
+        if (archived === 1) continue
 
         if (!tasksGrouped[parent_id]) tasksGrouped[parent_id] = []
         tasksGrouped[parent_id].push(tasks[task])
