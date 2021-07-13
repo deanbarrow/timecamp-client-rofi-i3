@@ -232,7 +232,7 @@ const formatedTimestamp = () => {
 const getEntries = async () => {
   // Start from Monday as current work week
   const curr = new Date();
-  const first = curr.getDay() === 0 ? 6 : curr.getDay() + 1;
+  const first = curr.getDay() === 0 ? 6 : curr.getDay() - 1;
   const last = 6 - first;
 
   const rangeStart = new Date(new Date().setDate(new Date().getDate() - first))
